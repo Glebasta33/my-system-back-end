@@ -2,7 +2,7 @@
 FROM openjdk:17
 
 # EXPOSE Задаёт порт
-EXPOSE 8080:8080
+EXPOSE 80:80
 
 # Создаём корневую папку для приложения внутри Image
 RUN mkdir /app
