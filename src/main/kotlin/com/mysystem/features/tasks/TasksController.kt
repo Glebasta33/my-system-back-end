@@ -1,5 +1,8 @@
 package com.mysystem.features.tasks
 
+import com.mysystem.database.tasks.TasksTable
+import com.mysystem.database.tasks.mapToDTO
+import com.mysystem.database.tasks.mapToModel
 import com.mysystem.features.tasks.models.CreateTaskRequest
 import com.mysystem.features.tasks.models.ReadTasksRequest
 import com.mysystem.features.tasks.models.ReadTasksResponse
@@ -14,12 +17,12 @@ object TasksController {
     suspend fun createGame(call: ApplicationCall) {
         val request = call.receive<CreateTaskRequest>()
 
-        //TODO: Добавить обращение к БД
-
         val newTask = TaskResponse(
             title = request.title,
             id = UUID.randomUUID().toString()
         )
+
+        TasksTable.create(newTask.mapToDTO())
 
         call.respond(newTask)
     }
@@ -27,10 +30,12 @@ object TasksController {
     suspend fun readGames(call: ApplicationCall) {
         val request = call.receive<ReadTasksRequest>()
 
-        //TODO: Добавить обращение к БД
+        val filteredTasks = TasksTable.read()
+            .filter { it.title.contains(request.search, ignoreCase = true) }
+            .map { it.mapToModel() }
 
         call.respond(
-            ReadTasksResponse(emptyList())
+            ReadTasksResponse(filteredTasks)
         )
     }
 
